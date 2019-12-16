@@ -1,0 +1,50 @@
+{
+    "name": "Tarjeta",
+    "fields": [
+        {
+            "fieldName": "tipo",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "numero",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "codSeguridad",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "fechaVencimiento",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "montoMax",
+            "fieldType": "Double"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "venta",
+            "otherEntityRelationshipName": "tarjeta",
+            "relationshipName": "venta"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "cliente",
+            "otherEntityRelationshipName": "tarjeta",
+            "relationshipName": "cliente",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20191216174730",
+    "entityTableName": "tarjeta",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

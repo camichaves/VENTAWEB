@@ -1,0 +1,35 @@
+
+
+
+entity Tarjeta {
+	tipo String,
+	numero String,
+	codSeguridad Integer,
+    fechaVencimiento Integer,
+    montoMax Double
+}
+
+entity Cliente {
+	nombre String,
+    apellido String
+
+}
+
+entity Venta {
+	monto Double
+	
+}
+
+relationship ManyToOne{
+
+	Tarjeta {cliente} to Cliente
+    Cliente {user(login)} to User    
+}
+
+relationship OneToMany{
+	    Cliente to Venta {cliente}
+    Tarjeta to Venta {tarjeta}
+
+}
+
+

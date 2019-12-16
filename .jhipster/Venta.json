@@ -1,0 +1,35 @@
+{
+    "name": "Venta",
+    "fields": [
+        {
+            "fieldName": "monto",
+            "fieldType": "Double"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "cliente",
+            "otherEntityRelationshipName": "venta",
+            "relationshipName": "cliente",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "tarjeta",
+            "otherEntityRelationshipName": "venta",
+            "relationshipName": "tarjeta",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20191216174732",
+    "entityTableName": "venta",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

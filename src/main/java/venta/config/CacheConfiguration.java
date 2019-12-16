@@ -45,6 +45,11 @@ public class CacheConfiguration {
             createCache(cm, venta.domain.User.class.getName());
             createCache(cm, venta.domain.Authority.class.getName());
             createCache(cm, venta.domain.User.class.getName() + ".authorities");
+            createCache(cm, venta.domain.Tarjeta.class.getName());
+            createCache(cm, venta.domain.Tarjeta.class.getName() + ".ventas");
+            createCache(cm, venta.domain.Cliente.class.getName());
+            createCache(cm, venta.domain.Cliente.class.getName() + ".ventas");
+            createCache(cm, venta.domain.Venta.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }
