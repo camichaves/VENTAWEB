@@ -1,0 +1,42 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "venta",
+      "nativeLanguage": "es"
+    },
+    "jhipsterVersion": "6.5.1",
+    "applicationType": "gateway",
+    "baseName": "VENTAWEB",
+    "packageName": "venta",
+    "packageFolder": "venta",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "mysql",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": "eureka",
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "OTdmMWUxMTc4YTkwNDU5MDRkOWMxMzZiMzFlMjk1MDQzZjJlOTE4ZGIyYWUwMGJkZTJjZmI0MTg3YzhkNzlhOWYzMDlhOTRmZDkxNmFkMWMxMzk2Yjk3OWM3NDBlMWM3YzA4YzU5MzAxZmI4MWZkOTQ5NjgyNzlmM2ZmOTlkZjM=",
+    "embeddableLaunchScript": false,
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "clientFramework": "angularX",
+    "clientTheme": "yeti",
+    "clientThemeVariant": "dark",
+    "testFrameworks": ["gatling", "cucumber", "protractor"],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "nativeLanguage": "es",
+    "languages": ["es", "en"],
+    "blueprints": []
+  }
+}
