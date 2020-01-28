@@ -117,4 +117,9 @@ public class TarjetaResource {
         tarjetaRepository.deleteById(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
+
+	public Tarjeta traer(Long idTarjeta) {
+        Optional<Tarjeta> tarjeta = tarjetaRepository.findById(idTarjeta);
+		return tarjeta.get();
+	}
 }

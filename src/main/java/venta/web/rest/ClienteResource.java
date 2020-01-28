@@ -105,6 +105,12 @@ public class ClienteResource {
         return ResponseUtil.wrapOrNotFound(cliente);
     }
 
+    public Optional<Cliente> verificarCliente(Long id) {
+        Optional<Cliente> cliente = clienteRepository.findById(id);
+        //return cliente.isPresent();
+        return cliente;
+    }
+
     /**
      * {@code DELETE  /clientes/:id} : delete the "id" cliente.
      *

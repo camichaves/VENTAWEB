@@ -1,26 +1,39 @@
 package venta.web.rest;
 
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import venta.domain.*;
-import venta.repository.ClienteRepository;
-import venta.repository.VentaRepository;
-import venta.web.rest.errors.BadRequestAlertException;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
 
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
-import java.util.List;
-import java.util.Optional;
+import io.github.jhipster.web.util.HeaderUtil;
+import io.github.jhipster.web.util.ResponseUtil;
+import venta.domain.BodyRealizarVenta;
+import venta.domain.CargaLog;
+import venta.domain.Cliente;
+import venta.domain.Respuesta;
+import venta.domain.RespuestaErr;
+import venta.domain.Tarjeta;
+import venta.domain.Venta;
+import venta.domain.VerificarTarjeta;
+import venta.repository.ClienteRepository;
+import venta.repository.VentaRepository;
+import venta.web.rest.errors.BadRequestAlertException;
 
 /**
  * REST controller for managing {@link venta.domain.Venta}.
@@ -38,11 +51,16 @@ public class VentaResource {
     private String applicationName;
 
     private final VentaRepository ventaRepository;
+    private ClienteResource clientes;
+    private TarjetaResource tarjetas;
 
     ClienteRepository clienteRepository;
 
-    public VentaResource(VentaRepository ventaRepository) {
+    public VentaResource(VentaRepository ventaRepository,  ClienteResource client, 
+                        TarjetaResource tarj) {
         this.ventaRepository = ventaRepository;
+        this.clientes = client;
+        this.tarjetas = tarj;
     }
 
     /**
@@ -71,48 +89,84 @@ public class VentaResource {
 
         Venta venta = new Venta(body.getMontoVenta());
         Venta result = ventaRepository.save(venta);
-        //System.out.println("idVenta:"+result.getId());
+        System.out.println("idVenta:"+result.getId());
 
-        CargaLog.enviar(result.getId(),"Peticion de venta","INFO","Proceso de Venta iniciado");
+        //CargaLog.enviar(result.getId(),"Peticion de venta","INFO","Proceso de Venta iniciado");
 
 
 
         
-        System.out.println("paso ");
+        
 
-         // bif(!cliente.isPresent()) {
-           //  System.out.println("El cliente no existe");
-          //   RespuestaErr re = new RespuestaErr(5, "El cliente no existe");
-         //    return ResponseEntity.status(403).body(re);
-        // }
+
+        Optional<Cliente> client = this.clientes.verificarCliente(body.getIdCliente());
+
+         if(!client.isPresent()) {
+             System.out.println("El cliente no existe");
+             //CargaLog.enviar(result.getId(),"Verificacion de cliente",
+             //"ERROR","El cliente no existe");
+
+             RespuestaErr re = new RespuestaErr(5, "El cliente no existe");
+             return ResponseEntity.status(403).body(re);
+         }
 
          System.out.println("El cliente existe");
+         //CargaLog.enviar(result.getId(),"Verificacion de cliente",
+         //"INFO","El id de cliente es valido");
+
          
          
 
 
-         //result.setCliente(cliente.get());
-       // Venta resultado = ventaRepository.save(result);
+         result.setCliente(client.get());
+         ventaRepository.save(result);
+         //this.updateVenta(result);
 
-        //CargaLog.enviar(result.getId(),"Peticion de venta","INFO","El ID de cliente es válido");
 
 
         //verificar que la tarjeta exista y no este vencida
 
-      //  String rtaVerificarTarjeta = Verificar.tarjetasGuardadas(body.getIdTarjeta());
+         String rta = VerificarTarjeta.verificar(body.getIdTarjeta());
+         
+         
+         //String tarjetavalida = "{\n\"cod\" : 21,\n\"info\" : \"Tarjeta valida\"\n}\n";
+         
+         if ( ! (rta.contains("21,") && rta.contains("Tarjeta valida")) ){
+             //CargaLog.enviar(result.getId(),"Verificacion de tarjeta",
+             //"ERROR","La tarjeta no es valida");
+            RespuestaErr re = new RespuestaErr(6, "Tarjeta invalida");
+            return ResponseEntity.status(403).body(re);
 
-       // System.out.println("---------------------------------------------");
-        //System.out.println(rtaVerificarTarjeta);
-        //System.out.println("---------------------------------------------");
+         }
+         //CargaLog.enviar(result.getId(),"Verificacion de tarjeta",
+             //"INFO","Tarjeta valida");
+        Tarjeta tarjeta = this.tarjetas.traer(body.getIdTarjeta());
+
+        result.setTarjeta(tarjeta);
+        ventaRepository.save(result);
+        //this.updateVenta(result);
 
 
-        //RespuestaErr re = new RespuestaErr(1, rtaVerificarTarjeta);
-        //return ResponseEntity.status(403).body(re);
+        //verificar el monto de la venta
+
+        rta = VerificarTarjeta.verificarMonto(result);
+        if ( ! (rta.contains("22,") && rta.contains("Monto valido")) ){
+            RespuestaErr re = new RespuestaErr(6, "Monto invalido");
+            return ResponseEntity.status(403).body(re);
+        }
+
+        //CargaLog.enviar(result.getId(),"Verificacion del monto de venta",
+         //"INFO","El monto es valido");
+         
+
+       
 
 
 
-
-        return ResponseEntity.status(403).body(null);
+        Respuesta rtafinal = new Respuesta(10, "Venta realizada exitosamente");
+        //CargaLog.enviar(result.getId(),"Estado de venta",
+         //"INFO","El monto es valido");
+        return ResponseEntity.status(201).body(rtafinal);
     }
 
 

@@ -1,9 +1,12 @@
 package venta.domain;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -13,10 +16,12 @@ import java.net.URL;
 
      static URL url;
 
+    
+
      static {
          try {
              url = new URL("http://localhost:8120/api/registro");
-         } catch (MalformedURLException e) {
+         } catch (final MalformedURLException e) {
              e.printStackTrace();
          }
      }
@@ -25,47 +30,41 @@ import java.net.URL;
      }
      static HttpURLConnection conn;
 
-     static {
-         try {
-             conn = (HttpURLConnection) url.openConnection();
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
-     }
-
-     static String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTU3OTAyNTgwOX0.vp0y7QAk-LHrcHJN5Eb1ic-ly2BAbYTtNxj-oeJCywA01J5CWCh8L3qjuZ8LCU_0wq9TCT5xYAARf0Ynsz6LWw";
+     static String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTU4MjQyMjYyNn0.0M4W5-OR8WG4vRvtikjXEJiHXrwgNan7KnEwVqmqBdDuRNruaLuzwjQ9u6-0bkgq7z9znoOWujWf6wktKiRv9A";
 
 
+     public static String enviar (final Long idVenta, final String paso, final String resultado, final String explicacion ) throws IOException {
 
-     public static String enviar (Long idVenta, String paso, String resultado, String explicacion ) throws IOException {
 
+    
 
-        conn.setRequestProperty("Authorization","Bearer "+token);
-        //e.g. bearer token= eyJhbGciOiXXXzUxMiJ9.eyJzdWIiOiPyc2hhcm1hQHBsdW1zbGljZS5jb206OjE6OjkwIiwiZXhwIjoxNTM3MzQyNTIxLCJpYXQiOjE1MzY3Mzc3MjF9.O33zP2l_0eDNfcqSQz29jUGJC-_THYsXllrmkFnk85dNRbAw66dyEKBP5dVcFUuNTA8zhA83kk3Y41_qZYx43T
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            System.out.println(token);
+            conn.setRequestProperty("Authorization","Bearer " + token);
+            conn.setRequestProperty("Content-Type", "application/json");
+            final OutputStream os = conn.getOutputStream();
+            final OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");    
+            osw.write("{\"idVenta\": "+idVenta+", \"paso\": \""+paso+"\",\"resultado\": \""+resultado+"\", \"explicacion\": \""+explicacion+"\"}");
+            osw.flush();
+            osw.close();
+            os.close();  //don't forget to close the OutputStream
+            conn.connect();
 
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Accept", "application/json");
-        conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
-        String jsonInputString = "{\"idVenta\": "+idVenta+", \"paso\": \""+paso+"\",\"resultado\": \""+resultado+"\", \"explicacion\": \""+explicacion+"\"}";
-
-        try(OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-
-        try(BufferedReader br = new BufferedReader(
-            new InputStreamReader(conn.getInputStream(), "utf-8"))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine = null;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
+            //read the inputstream and print it
+            String result;
+            final BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
+            final ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            int result2 = bis.read();
+            while(result2 != -1) {
+                buf.write((byte) result2);
+                result2 = bis.read();
             }
-            System.out.println(response.toString());
-            return response.toString();
-        }
+            result = buf.toString();
+            System.out.println(result);
+            conn.disconnect();
+            return result;
 
-
-      }
-
-}
+    }
+ }

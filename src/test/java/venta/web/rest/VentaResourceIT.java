@@ -61,7 +61,7 @@ public class VentaResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final VentaResource ventaResource = new VentaResource(ventaRepository);
+        final VentaResource ventaResource = new VentaResource(ventaRepository, null, null);
         this.restVentaMockMvc = MockMvcBuilders.standaloneSetup(ventaResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
