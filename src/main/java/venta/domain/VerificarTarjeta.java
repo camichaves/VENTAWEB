@@ -17,7 +17,7 @@ abstract public class VerificarTarjeta {
     static long idtarjeta;
     static HttpURLConnection conn;
 
-    static String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTU4MjY0NTMzMX0.lCmrN18zlqWAq_l3Xuwh6XXZKHoDw8WLOjS48EN2-T2EPPsH3TErFuSldC7sPKhTiuQXop3eXw9anhTKT9pLYw";
+    static String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTU4MjkzOTM0NH0.PZYEKLhyxr1hnT_bg23YTssWXBAf4Wuw63QORteTwe07aTMRFuUjMY6iWN-vrtyoYaKr8cobEZhWsrkscUMGTA";
 
     static public String verificar(long id) throws IOException {
         idtarjeta = id;
@@ -41,7 +41,7 @@ abstract public class VerificarTarjeta {
             conn.setRequestProperty("Authorization","Bearer " + token);
             conn.setRequestProperty("Content-Type", "application/json");
             final OutputStream os = conn.getOutputStream();
-            final OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");    
+            final OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
             osw.write("{\"id\": "+idtarjeta+"}");
             osw.flush();
             osw.close();
@@ -87,7 +87,7 @@ abstract public class VerificarTarjeta {
             conn.setRequestProperty("Authorization","Bearer " + token);
             conn.setRequestProperty("Content-Type", "application/json");
             final OutputStream os = conn.getOutputStream();
-            final OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");    
+            final OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
             osw.write("{\"id\": "+vta.getTarjeta().getId()+", \"monto\": "+vta.getMonto()+"}");
             osw.flush();
             osw.close();
@@ -109,7 +109,7 @@ abstract public class VerificarTarjeta {
             System.out.println("---------------------------------------------");
             conn.disconnect();
             return result;
-		
+
 	}
 
 

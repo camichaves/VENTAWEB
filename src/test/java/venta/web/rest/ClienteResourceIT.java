@@ -64,7 +64,7 @@ public class ClienteResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final ClienteResource clienteResource = new ClienteResource(clienteRepository);
+        final ClienteResource clienteResource = new ClienteResource(clienteRepository, null);
         this.restClienteMockMvc = MockMvcBuilders.standaloneSetup(clienteResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -156,7 +156,7 @@ public class ClienteResourceIT {
             .andExpect(jsonPath("$.[*].nombre").value(hasItem(DEFAULT_NOMBRE)))
             .andExpect(jsonPath("$.[*].apellido").value(hasItem(DEFAULT_APELLIDO)));
     }
-    
+
     @Test
     @Transactional
     public void getCliente() throws Exception {

@@ -1,7 +1,11 @@
 package venta.web.rest;
 
 import venta.domain.Cliente;
+import venta.domain.RespuestaErr;
+import venta.domain.User;
 import venta.repository.ClienteRepository;
+import venta.security.SecurityUtils;
+import venta.service.UserService;
 import venta.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
@@ -10,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional; 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -36,8 +40,11 @@ public class ClienteResource {
 
     private final ClienteRepository clienteRepository;
 
-    public ClienteResource(ClienteRepository clienteRepository) {
+    private final UserService userService;
+
+    public ClienteResource(ClienteRepository clienteRepository, UserService userSer) {
         this.clienteRepository = clienteRepository;
+        this.userService = userSer;
     }
 
     /**
@@ -47,16 +54,72 @@ public class ClienteResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new cliente, or with status {@code 400 (Bad Request)} if the cliente has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/clientes")
-    public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente) throws URISyntaxException {
+//    @PostMapping("/clientes")
+//    public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente) throws URISyntaxException {
+//        log.debug("REST request to save Cliente : {}", cliente);
+//        if (cliente.getId() != null) {
+//            throw new BadRequestAlertException("A new cliente cannot already have an ID", ENTITY_NAME, "idexists");
+//        }
+//        Cliente result = clienteRepository.save(cliente);
+//        return ResponseEntity.created(new URI("/api/clientes/" + result.getId()))
+//            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+//            .body(result);
+//    }
+
+
+    @PostMapping("/cliente/agregar")
+    public ResponseEntity createCliente(@RequestBody Cliente cliente) throws URISyntaxException {
+
+        //agregar
         log.debug("REST request to save Cliente : {}", cliente);
-        if (cliente.getId() != null) {
-            throw new BadRequestAlertException("A new cliente cannot already have an ID", ENTITY_NAME, "idexists");
+
+        if(cliente.getApellido()== null || cliente.getApellido()== "" || cliente.getNombre()== null || cliente.getNombre()== ""){
+            RespuestaErr re = new RespuestaErr(60, "Nombre o Apellido invalido");
+            return ResponseEntity.status(403).body(re);
         }
-        Cliente result = clienteRepository.save(cliente);
-        return ResponseEntity.created(new URI("/api/clientes/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+
+        Optional<Long> idcliente = clienteRepository.findByNombreAndApellido(cliente.getNombre(), cliente.getApellido());
+
+        if(idcliente.isPresent()){
+            RespuestaErr re = new RespuestaErr(70, "Este cliente ya existe, ID:" + idcliente.get().toString());
+            return ResponseEntity.status(403).body(re);
+        }else{
+
+
+            Optional <User> currentuser =userService.getUserWithAuthorities();
+            if(currentuser.isPresent()){
+                cliente.setUser(currentuser.get());
+            }
+            Cliente result = clienteRepository.save(cliente);
+            return ResponseEntity.created(new URI("/api/clientes/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+                .body(result);
+        }
+
+
+    }
+
+
+    @PostMapping("/cliente/token")
+    public ResponseEntity obtenerCliente(@RequestBody Cliente cliente) throws URISyntaxException {
+
+        log.debug("REST request to get Cliente : {}", cliente);
+
+        if(cliente.getApellido()== null || cliente.getNombre()== null){
+            RespuestaErr re = new RespuestaErr(60, "Nombre o Apellido invalido");
+            return ResponseEntity.status(403).body(re);
+        }
+
+        Optional<Long> idcliente = clienteRepository.findByNombreAndApellido(cliente.getNombre(), cliente.getApellido());
+
+        if(idcliente.isPresent()){
+            //token
+            return ResponseUtil.wrapOrNotFound(idcliente);
+        }else{
+            return ResponseEntity.status(403).body("0");
+        }
+
+
     }
 
     /**

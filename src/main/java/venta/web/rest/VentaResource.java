@@ -56,7 +56,7 @@ public class VentaResource {
 
     ClienteRepository clienteRepository;
 
-    public VentaResource(VentaRepository ventaRepository,  ClienteResource client, 
+    public VentaResource(VentaRepository ventaRepository,  ClienteResource client,
                         TarjetaResource tarj) {
         this.ventaRepository = ventaRepository;
         this.clientes = client;
@@ -91,82 +91,88 @@ public class VentaResource {
         Venta result = ventaRepository.save(venta);
         System.out.println("idVenta:"+result.getId());
 
-        //CargaLog.enviar(result.getId(),"Peticion de venta","INFO","Proceso de Venta iniciado");
+        CargaLog.enviar(result.getId(),"Peticion de venta","INFO","Proceso de Venta iniciadooooooo");
 
 
 
-        
-        
+
+
 
 
         Optional<Cliente> client = this.clientes.verificarCliente(body.getIdCliente());
 
          if(!client.isPresent()) {
              System.out.println("El cliente no existe");
-             //CargaLog.enviar(result.getId(),"Verificacion de cliente",
-             //"ERROR","El cliente no existe");
+             CargaLog.enviar(result.getId(),"Verificacion de cliente",
+             "ERROR","El cliente no existe");
 
              RespuestaErr re = new RespuestaErr(5, "El cliente no existe");
              return ResponseEntity.status(403).body(re);
          }
 
          System.out.println("El cliente existe");
-         //CargaLog.enviar(result.getId(),"Verificacion de cliente",
-         //"INFO","El id de cliente es valido");
+         CargaLog.enviar(result.getId(),"Verificacion de cliente",
+         "INFO","El id de cliente es valido");
 
-         
-         
+
+
 
 
          result.setCliente(client.get());
          ventaRepository.save(result);
-         //this.updateVenta(result);
+
 
 
 
         //verificar que la tarjeta exista y no este vencida
 
          String rta = VerificarTarjeta.verificar(body.getIdTarjeta());
-         
-         
+
+
          //String tarjetavalida = "{\n\"cod\" : 21,\n\"info\" : \"Tarjeta valida\"\n}\n";
-         
+
          if ( ! (rta.contains("21,") && rta.contains("Tarjeta valida")) ){
-             //CargaLog.enviar(result.getId(),"Verificacion de tarjeta",
-             //"ERROR","La tarjeta no es valida");
-            RespuestaErr re = new RespuestaErr(6, "Tarjeta invalida");
+             CargaLog.enviar(result.getId(),"Verificacion de tarjeta",
+             "ERROR","La tarjeta no es valida: no existe o esta vencida");
+            RespuestaErr re = new RespuestaErr(6, "Tarjeta invalida:  no existe o esta vencida");
             return ResponseEntity.status(403).body(re);
 
          }
-         //CargaLog.enviar(result.getId(),"Verificacion de tarjeta",
-             //"INFO","Tarjeta valida");
+         CargaLog.enviar(result.getId(),"Verificacion de tarjeta",
+             "INFO","Tarjeta valida");
         Tarjeta tarjeta = this.tarjetas.traer(body.getIdTarjeta());
 
         result.setTarjeta(tarjeta);
         ventaRepository.save(result);
-        //this.updateVenta(result);
+
 
 
         //verificar el monto de la venta
 
-        rta = VerificarTarjeta.verificarMonto(result);
-        if ( ! (rta.contains("22,") && rta.contains("Monto valido")) ){
-            RespuestaErr re = new RespuestaErr(6, "Monto invalido");
-            return ResponseEntity.status(403).body(re);
-        }
+     if(result.getMonto()>5000) {
 
-        //CargaLog.enviar(result.getId(),"Verificacion del monto de venta",
-         //"INFO","El monto es valido");
-         
 
-       
+         rta = VerificarTarjeta.verificarMonto(result);
+         if (!(rta.contains("22,") && rta.contains("Monto valido"))) {
+             CargaLog.enviar(result.getId(), "Verificacion del monto de venta",
+                 "ERROR", "El monto no es valido");
+             RespuestaErr re = new RespuestaErr(6, "Monto invalido");
+             return ResponseEntity.status(403).body(re);
+         }
+     }
+
+        CargaLog.enviar(result.getId(),"Verificacion del monto de venta",
+         "INFO","El monto es valido");
+
+
+
 
 
 
         Respuesta rtafinal = new Respuesta(10, "Venta realizada exitosamente");
-        //CargaLog.enviar(result.getId(),"Estado de venta",
-         //"INFO","El monto es valido");
-        return ResponseEntity.status(201).body(rtafinal);
+        CargaLog.enviar(result.getId(),"Estado de venta",
+         "INFO","Venta realizada exitosamente");
+        return ResponseEntity.status(200).body(rtafinal);
     }
 
 

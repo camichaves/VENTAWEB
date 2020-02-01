@@ -16,7 +16,7 @@ import java.net.URL;
 
      static URL url;
 
-    
+
 
      static {
          try {
@@ -30,13 +30,13 @@ import java.net.URL;
      }
      static HttpURLConnection conn;
 
-     static String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTU4MjQyMjYyNn0.0M4W5-OR8WG4vRvtikjXEJiHXrwgNan7KnEwVqmqBdDuRNruaLuzwjQ9u6-0bkgq7z9znoOWujWf6wktKiRv9A";
+     static String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTU4MjkzOTM0NH0.PZYEKLhyxr1hnT_bg23YTssWXBAf4Wuw63QORteTwe07aTMRFuUjMY6iWN-vrtyoYaKr8cobEZhWsrkscUMGTA";
 
 
      public static String enviar (final Long idVenta, final String paso, final String resultado, final String explicacion ) throws IOException {
 
 
-    
+
 
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
@@ -45,7 +45,7 @@ import java.net.URL;
             conn.setRequestProperty("Authorization","Bearer " + token);
             conn.setRequestProperty("Content-Type", "application/json");
             final OutputStream os = conn.getOutputStream();
-            final OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");    
+            final OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
             osw.write("{\"idVenta\": "+idVenta+", \"paso\": \""+paso+"\",\"resultado\": \""+resultado+"\", \"explicacion\": \""+explicacion+"\"}");
             osw.flush();
             osw.close();
