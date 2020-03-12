@@ -30,7 +30,7 @@ import java.net.URL;
      }
      static HttpURLConnection conn;
 
-     static String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTU4MjkzOTM0NH0.PZYEKLhyxr1hnT_bg23YTssWXBAf4Wuw63QORteTwe07aTMRFuUjMY6iWN-vrtyoYaKr8cobEZhWsrkscUMGTA";
+     static String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImV4cCI6MTU4NDA1ODA5N30.KSR2S7b7BQd9gToN6Oe2fh1x8Bx9VKQ5TAp9y1lqE0oJ9NlLKPJGxELXGyKw6UHUnzvcCTgyaA7sr6HHk7sD1w";
 
 
      public static String enviar (final Long idVenta, final String paso, final String resultado, final String explicacion ) throws IOException {
